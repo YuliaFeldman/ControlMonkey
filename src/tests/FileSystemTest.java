@@ -1,13 +1,11 @@
 package tests;
 
 import filesystem.FileSystem;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 
-
-public class FileSystemTest{
+public class FileSystemTest {
 
     @Test
     public void testAddFile(){
@@ -18,10 +16,13 @@ public class FileSystemTest{
         assertEquals("file.txt", fileSystem.getBiggestFile());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAddFileToNonExistentDirectory(){
         FileSystem fileSystem = new FileSystem();
-        fileSystem.addFile("nonexistent", "file.txt", 100);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            fileSystem.addFile("nonexistent", "file.txt", 100);
+        });
+        assertTrue(exception.getMessage().contains("Parent directory 'nonexistent' not found"));
     }
 
     @Test
@@ -32,25 +33,25 @@ public class FileSystemTest{
         assertNotNull(fileSystem.findDirectory("root\\Documents"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAddDirectoryToNonExistentParent(){
         FileSystem fileSystem = new FileSystem();
-        fileSystem.addDir("nonexistent", "Documents");
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            fileSystem.addDir("nonexistent", "Documents");
+        });
+        assertTrue(exception.getMessage().contains("Parent directory 'nonexistent' not found"));
     }
 
     @Test
     public void testDeleteFile(){
         FileSystem fileSystem = new FileSystem();
         fileSystem.addDir("", "root");
-        fileSystem.addFile("root", "example.txt", 100);
-        fileSystem.delete("example.txt");
-        try {
-            fileSystem.getFileSize("example.txt");
-            fail("File should have been deleted");
-        }
-        catch(IllegalArgumentException e){
-            // Expected exception
-        }
+        fileSystem.addFile("root", "file.txt", 100);
+        fileSystem.delete("file.txt");
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            fileSystem.getFileSize("file.txt");
+        });
+        assertTrue(exception.getMessage().contains("File 'file.txt' not found"));
     }
 
     @Test
@@ -60,5 +61,14 @@ public class FileSystemTest{
         fileSystem.addDir("root", "Documents");
         fileSystem.delete("Documents");
         assertNull(fileSystem.findDirectory("root\\Documents"));
+    }
+
+    @Test
+    public void testDeleteNonExistentFileOrDirectory(){
+        FileSystem fileSystem = new FileSystem();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            fileSystem.delete("nonExistentEntity");
+        });
+        assertTrue(exception.getMessage().contains("Directory or File 'nonExistentEntity' not found"));
     }
 }
