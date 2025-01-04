@@ -48,7 +48,7 @@ public class FileSystem{
 
         if(parentDirName == null || parentDirName.isEmpty()){
             if (this.files.containsKey(fileName))
-                throw new IllegalArgumentException("File already exists in the root directory");
+                throw new IllegalArgumentException("File '" + fileName + "' already exists in the root directory");
             files.put(fileName, file);
         }
         else{
@@ -56,7 +56,7 @@ public class FileSystem{
             if (parentDir != null)
                 parentDir.addFile(fileName, fileSize);
             else
-                throw new IllegalArgumentException("Parent directory not found");
+                throw new IllegalArgumentException("Parent directory '" + parentDirName + "' not found");
         }
     }
 
@@ -78,7 +78,7 @@ public class FileSystem{
 
         if(parentDirName == null || parentDirName.isEmpty()){
             if (directories.containsKey(dirName))
-                throw new IllegalArgumentException("Directory already exists in the root directory");
+                throw new IllegalArgumentException("Directory '" + dirName+ "' already exists in the root directory");
             directories.put(dirName, directory);
         }
         else{
@@ -86,7 +86,7 @@ public class FileSystem{
             if (parentDir != null)
                 parentDir.addDirectory(dirName);
             else
-                throw new IllegalArgumentException("Parent directory not found");
+                throw new IllegalArgumentException("Parent directory '" + parentDirName + "' not found");
         }
     }
 
@@ -135,7 +135,7 @@ public class FileSystem{
             if(file != null)
                 return file.getSize();
         }
-        throw new IllegalArgumentException("File not found");
+        throw new IllegalArgumentException("File '"+ fileName + "' not found");
     }
 
     /**
@@ -185,7 +185,7 @@ public class FileSystem{
             System.out.println("File: " + file.getName() + ", Size: " + file.getSize() + ", Created: " + file.getCreationDate());
         }
         for(Directory dir : directories.values()){
-            showDirectory(dir, 0);
+            showDirectory(dir, "");
         }
     }
 
@@ -193,35 +193,18 @@ public class FileSystem{
      * Shows the hierarchical structure of a directory.
      *
      * @param dir the directory
-     * @param level the level of indentation
+     * @param tabIndent the string containing the current indentation level
      *
      * @complexity
      * Time: O(n) where n is the total number of files and directories in the directory structure
      * Space: O(m) where m is the maximum depth of the directory tree.
      */
-    private void showDirectory(Directory dir, int level){
-        printIndent(level);
-        System.out.println("Directory: " + dir.getName() + ", Created: " + dir.getCreationDate());
-        for(File file : dir.getFiles().values()){
-            printIndent(level + 1);
-            System.out.println("File: " + file.getName() + ", Size: " + file.getSize() + ", Created: " + file.getCreationDate());
-        }
-        for(Directory subDir : dir.getDirectories().values()){
-            showDirectory(subDir, level + 1);
-        }
-    }
-
-    /**
-     * Prints the indentation for hierarchical display.
-     *
-     * @param level the level of indentation
-     *
-     * @complexity Time: O(level), Space: O(1)
-     */
-    private void printIndent(int level){
-        for(int i = 0; i < level; i++){
-            System.out.print("\t");
-        }
+    private void showDirectory(Directory dir, String tabIndent){
+        System.out.println(tabIndent + "Directory: " + dir.getName() + ", Created: " + dir.getCreationDate());
+        for(File file : dir.getFiles().values())
+            System.out.println(tabIndent + "\t" + "File: " + file.getName() + ", Size: " + file.getSize() + ", Created: " + file.getCreationDate());
+        for(Directory subDir : dir.getDirectories().values())
+            showDirectory(subDir, tabIndent + "\t");
     }
 
     /**
@@ -251,7 +234,7 @@ public class FileSystem{
             foundAndDeleted = true;
         }
         if(!foundAndDeleted)
-            throw new IllegalArgumentException("Directory or File not found");
+            throw new IllegalArgumentException("Directory or File '" + name+ "' not found");
         if(name.equals(biggestFileName)) //Each name, file or directory is unique in the file system
             recalculateMaxFileSize();
     }
