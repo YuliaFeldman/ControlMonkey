@@ -552,7 +552,7 @@ public class FileSystem{
         }
         if(!foundAndDeleted)
             throw new IllegalArgumentException("Directory or File '" + name+ "' not found");
-        if(name.equals(biggestFileName)) //Each name, file or directory is unique in the file system
+        if(name.equals(biggestFileName))
             recalculateMaxFileSize();
     }
 
