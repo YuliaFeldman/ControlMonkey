@@ -1,69 +1,74 @@
 package tests;
 
-import filesystem.Directory;
+import filesystem.FileSystem;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 
-public class DirectoryTest{
-
-    @Test
-    public void testDirectoryCreation(){
-        Directory directory = new Directory("Documents");
-        assertEquals("Documents", directory.getName());
-        assertNotNull(directory.getCreationDate());
-        assertTrue(directory.getDirectories().isEmpty());
-        assertTrue(directory.getFiles().isEmpty());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testDirectoryCreationWithLongName(){
-        new Directory("a".repeat(33));
-    }
+public class FileSystemTest {
 
     @Test
     public void testAddFile(){
-        Directory directory = new Directory("Documents");
-        directory.addFile("file.txt", 100);
-        assertEquals(1, directory.getFiles().size());
-        assertNotNull(directory.getFile("file.txt"));
+        FileSystem fileSystem = new FileSystem();
+        fileSystem.addDir("", "root");
+        fileSystem.addFile("root", "file.txt", 100);
+        assertEquals(100, fileSystem.getFileSize("file.txt"));
+        assertEquals("file.txt", fileSystem.getBiggestFile());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testAddExistingFile() {
-        Directory directory = new Directory("Documents");
-        directory.addFile("file.txt", 100);
-        directory.addFile("file.txt", 200);
+    @Test
+    public void testAddFileToNonExistentDirectory(){
+        FileSystem fileSystem = new FileSystem();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            fileSystem.addFile("nonexistent", "file.txt", 100);
+        });
+        assertTrue(exception.getMessage().contains("Parent directory 'nonexistent' not found"));
     }
 
     @Test
     public void testAddDirectory(){
-        Directory directory = new Directory("Documents");
-        directory.addDirectory("Projects");
-        assertEquals(1, directory.getDirectories().size());
-        assertNotNull(directory.getSubDirectory("Projects"));
+        FileSystem fileSystem = new FileSystem();
+        fileSystem.addDir("", "root");
+        fileSystem.addDir("root", "Documents");
+        assertNotNull(fileSystem.findDirectory("root\\Documents"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testAddExistingDirectory(){
-        Directory directory = new Directory("Documents");
-        directory.addDirectory("Projects");
-        directory.addDirectory("Projects");
+    @Test
+    public void testAddDirectoryToNonExistentParent(){
+        FileSystem fileSystem = new FileSystem();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            fileSystem.addDir("nonexistent", "Documents");
+        });
+        assertTrue(exception.getMessage().contains("Parent directory 'nonexistent' not found"));
     }
 
     @Test
     public void testDeleteFile(){
-        Directory directory = new Directory("Documents");
-        directory.addFile("file.txt", 100);
-        directory.deleteFile("file.txt");
-        assertNull(directory.getFile("file.txt"));
+        FileSystem fileSystem = new FileSystem();
+        fileSystem.addDir("", "root");
+        fileSystem.addFile("root", "file.txt", 100);
+        fileSystem.delete("file.txt");
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            fileSystem.getFileSize("file.txt");
+        });
+        assertTrue(exception.getMessage().contains("File 'file.txt' not found"));
     }
 
     @Test
     public void testDeleteDirectory(){
-        Directory directory = new Directory("Documents");
-        directory.addDirectory("Projects");
-        directory.deleteDirectory("Projects");
-        assertNull(directory.getSubDirectory("Projects"));
+        FileSystem fileSystem = new FileSystem();
+        fileSystem.addDir("", "root");
+        fileSystem.addDir("root", "Documents");
+        fileSystem.delete("Documents");
+        assertNull(fileSystem.findDirectory("root\\Documents"));
+    }
+
+    @Test
+    public void testDeleteNonExistentFileOrDirectory(){
+        FileSystem fileSystem = new FileSystem();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            fileSystem.delete("nonExistentEntity");
+        });
+        assertTrue(exception.getMessage().contains("Directory or File 'nonExistentEntity' not found"));
     }
 }
