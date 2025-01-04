@@ -5,7 +5,6 @@ import java.util.Map;
 
 /**
  * Class representing the File System Manager.
- * (We assume each name, file or directory, is unique in this file system)
  */
 public class FileSystem{
 
