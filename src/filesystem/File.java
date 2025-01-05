@@ -23,4 +23,9 @@ public class File extends Entity{
     public long getSize(){
         return size;
     }
+
+    @Override
+    public void show(String indent){
+        System.out.println(indent + "File: " + getName() + ", Size: " + getSize() + ", Created: " + getCreationDate());
+    }
 }
