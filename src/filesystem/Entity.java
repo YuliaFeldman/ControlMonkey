@@ -30,4 +30,6 @@ public abstract class Entity{
     public Date getCreationDate(){
         return creationDate;
     }
+
+    public abstract void show(String indent);
 }

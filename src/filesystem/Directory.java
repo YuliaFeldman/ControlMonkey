@@ -58,4 +58,16 @@ public class Directory extends Entity{
     public File getFile(String fileName){
         return this.files.get(fileName);
     }
+
+    public void show(String indent){
+        System.out.println(indent + "Directory: " + getName() + ", Created: " + getCreationDate());
+        String newIndent = indent + "\t";
+
+        for(File file : files.values())
+            file.show(newIndent);
+
+        for(Directory directory : directories.values())
+            directory.show(newIndent);
+    }
+
 }

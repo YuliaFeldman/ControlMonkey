@@ -181,31 +181,13 @@ public class FileSystem{
      * Space: O(m) where m is the maximum depth of the directory tree.
      */
     public void showFileSystem(){
-        for(File file : files.values()){
-            System.out.println("File: " + file.getName() + ", Size: " + file.getSize() + ", Created: " + file.getCreationDate());
-        }
-        for(Directory dir : directories.values()){
-            showDirectory(dir, "");
-        }
+        String indent = "";
+        for(File file : files.values())
+            file.show(indent);
+        for(Directory directory : directories.values())
+            directory.show(indent);
     }
 
-    /**
-     * Shows the hierarchical structure of a directory.
-     *
-     * @param dir the directory
-     * @param tabIndent the string containing the current indentation level
-     *
-     * @complexity
-     * Time: O(n) where n is the total number of files and directories in the directory structure
-     * Space: O(m) where m is the maximum depth of the directory tree.
-     */
-    private void showDirectory(Directory dir, String tabIndent){
-        System.out.println(tabIndent + "Directory: " + dir.getName() + ", Created: " + dir.getCreationDate());
-        for(File file : dir.getFiles().values())
-            System.out.println(tabIndent + "\t" + "File: " + file.getName() + ", Size: " + file.getSize() + ", Created: " + file.getCreationDate());
-        for(Directory subDir : dir.getDirectories().values())
-            showDirectory(subDir, tabIndent + "\t");
-    }
 
     /**
      * Deletes a file or directory.
@@ -235,7 +217,7 @@ public class FileSystem{
         }
         if(!foundAndDeleted)
             throw new IllegalArgumentException("Directory or File '" + name+ "' not found");
-        if(name.equals(biggestFileName)) //Each name, file or directory is unique in the file system
+        if(name.equals(biggestFileName))
             recalculateMaxFileSize();
     }
 
