@@ -150,10 +150,8 @@ public class FileSystem{
      * Space: O(m) where m is the maximum depth of the directory tree (since each recursive call adds a new frame to the call stack)
      */
     private File findFile(Directory current, String fileName){
-        for(File file : current.getFiles().values()) {
-            if(file.getName().equals(fileName))
-                return file;
-        }
+        if(current.files.containsKey(fileName))
+            return current.getFile(fileName);
         for(Directory dir : current.getDirectories().values()){
             File found = findFile(dir, fileName);
             if(found != null)

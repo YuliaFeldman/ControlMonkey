@@ -31,14 +31,14 @@ public class Directory extends Entity{
 
     public void addFile(String fileName, int fileSize){
         if(files.containsKey(fileName))
-            throw new IllegalArgumentException("File already exists");
+            throw new IllegalArgumentException("File '" + fileName + "' already exists");
         File file = new File(fileName, fileSize);
         this.files.put(fileName, file);
     }
 
     public void addDirectory(String dirName){
         if(directories.containsKey(dirName))
-            throw new IllegalArgumentException("Directory already exists");
+            throw new IllegalArgumentException("Directory '" + dirName + "' already exists");
         Directory directory = new Directory(dirName);
         this.directories.put(dirName, directory);
     }

@@ -18,7 +18,7 @@ public abstract class Entity{
      */
     public Entity(String name){
         if(name.length() > MAX_NAME_LENGTH)
-            throw new IllegalArgumentException("Name too long");
+            throw new IllegalArgumentException("Name '" + name + "' too long");
         this.name = name;
         this.creationDate = new Date();
     }
